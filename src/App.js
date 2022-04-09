@@ -1,47 +1,86 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css';
 
 const initialFormValue = { nameWork: "" };
 
 function App() {
-  const [work, setWork] = useState([{ nameWork: "" }]);
-  const [form, setForm] = useState(initialFormValue);
+  const [work, setWork] = useState(initialFormValue);
+
+  const [completed, setCompleted] = useState([]);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  let [doList, setDoList] = useState([
+    {
+      nameWork: 'Learn JavaScript'
+    },
+    {
+      nameWork: 'Learn React'
+    },
+    {
+      nameWork: 'Have a life!'
+    },
+  ]);
+
+  const onSelectTab = (number) => {
+    setSelectedTab(number);
+  }
+
+  const deleteItem = (name) => {
+      const removedItem = doList.filter(x => x.nameWork !== name);
+      setDoList(removedItem)
+    if (selectedTab === 1) {
+      debugger;
+      const removeCompleted = completed.filter(x => x !== name);
+      setCompleted(removeCompleted)
+    }
+  };
 
   const handleOnChange = event => {
-    const taha = event.target;
-    setForm({ ...form, [taha.name]: taha.value });
+    const handleEvent = event.target;
+    setWork({ ...work, [handleEvent.name]: handleEvent.value });
   };
 
-  useEffect(() => {
-    setForm(initialFormValue);
-  }, [work]);
-
-  const addWork = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
 
-    if (form.nameWork === "") {
-      return false;
+    if (work.nameWork === '' || work.nameWork === null) {
+      return false
+    } else {
+      setDoList([...doList, work])
+      setWork({ ...work, nameWork: '' });
     }
 
-    setWork([...work, form]);
-    console.log(work);
+
   };
+
+  const onCompleted = (e) => {
+    if (completed.includes(e)) {
+      const notCompleted = completed.filter(x => x !== e);
+      setCompleted(notCompleted);
+    } else {
+      setCompleted([...completed, e]);
+    }
+  };
+
 
   return (
     <div className="App">
-      
+
       <section className="todoapp">
         <header className="header">
           <h1>todos</h1>
-          <form onSubmit={addWork}>
+          <form
+            type="submit"
+            onSubmit={(e) => onSubmit(e)}>
             <input
               type="text"
               name='nameWork'
               className="new-todo"
+              value={work.nameWork}
               placeholder="What needs to be done?"
-              autofocus
-              value={form.nameWork}
-              onChange={handleOnChange}
+              autoFocus
+              onChange={e => handleOnChange(e)}
             />
           </form>
         </header>
@@ -53,52 +92,44 @@ function App() {
           </label>
 
           <ul className="todo-list">
-            <li className="completed">
-              <div className="view">
-                <input className="toggle" type="checkbox" />
-                <label>Learn JavaScript</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
-            <li>
-              <div className="view">
-                <input className="toggle" type="checkbox" />
-                <label>Learn React</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
-            <li>
-              <div className="view">
-                <input className="toggle" type="checkbox" />
-                <label>Have a life!</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
+            {selectedTab === 0 && doList.map((toDo, i) => (
+              <li key={i} className={`${completed.includes(toDo.nameWork) ? 'completed' : null}`}>
+                <div className="view">
+                  <input className="toggle" type="checkbox" onClick={() => onCompleted(toDo.nameWork)} />
+                  <label>{toDo.nameWork}</label>
+                  <button onClick={() => deleteItem(toDo.nameWork)} className="destroy"></button>
+                </div>
+              </li>
+            ))}
+
+            {selectedTab === 1 && completed.map((toDo, i) => (
+              <li key={i} className='completed'>
+                <div className="view">
+                  <input className="toggle" checked='true' type="checkbox" onClick={() => onCompleted(toDo.nameWork)} />
+                  <label>{toDo}</label>
+                  <button onClick={() => deleteItem(toDo.nameWork)} className="destroy"></button>
+                </div>
+              </li>
+            ))}
           </ul>
         </section>
 
         <footer className="footer">
 
           <span className="todo-count">
-            <strong>2</strong>
+            <strong>{doList.length - completed.length}</strong>
             items left
           </span>
 
           <ul className="filters">
             <li>
-              <a className="selected">All</a>
+              <a className={`${selectedTab === 0 ? 'selected' : null}`} onClick={() => onSelectTab(0)}>All</a>
             </li>
             <li>
-              <a>Active</a>
-            </li>
-            <li>
-              <a>Completed</a>
+              <a className={`${selectedTab === 1 ? 'selected' : null}`} onClick={() => onSelectTab(1)} >Completed</a>
             </li>
           </ul>
 
-          <button className="clear-completed">
-            Clear completed
-          </button>
         </footer>
       </section>
 
