@@ -30,7 +30,6 @@ function App() {
       const removedItem = doList.filter(x => x.nameWork !== name);
       setDoList(removedItem)
     if (selectedTab === 1) {
-      debugger;
       const removeCompleted = completed.filter(x => x !== name);
       setCompleted(removeCompleted)
     }
@@ -50,8 +49,6 @@ function App() {
       setDoList([...doList, work])
       setWork({ ...work, nameWork: '' });
     }
-
-
   };
 
   const onCompleted = (e) => {
@@ -62,7 +59,6 @@ function App() {
       setCompleted([...completed, e]);
     }
   };
-
 
   return (
     <div className="App">
@@ -134,9 +130,7 @@ function App() {
       </section>
 
       <footer className="info">
-        <p>Click to edit a todo</p>
-        <p>Created by <a href="https://d12n.me/">Dmitry Sharabin</a></p>
-        <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+        <p>Created by <a href="https://gokalpgiray.github.io/Portfolio/">Gökalp Giray</a></p>
       </footer>
     </div>
   );
